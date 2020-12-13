@@ -57,7 +57,7 @@ def drawDebugRectangles(img, segmentations):
 
     return img
 
-def overlayResults(screen, segs, pilotnames, pilotstats):
+def getOverlay(screen, segs, pilotnames, pilotstats):
     for teamNr in range(2):
         for lanceNr in range(3):
             for pilotNr in range(4):

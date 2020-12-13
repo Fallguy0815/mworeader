@@ -3,6 +3,7 @@ import time
 
 global debug_mode
 global final_time
+global overlayTitle
 
 def update():
     global debug_mode
