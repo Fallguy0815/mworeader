@@ -9,6 +9,7 @@ import debug_reader
 import pytesseract
 from pytesseract import Output
 import cv2
+import sys
 
 
 
@@ -31,25 +32,31 @@ def applyOcr(gray, segs):
                 yRange = [sPoint[0], ePoint[0]]
                 xRange = [sPoint[1], ePoint[1]]
                 pn = gray[xRange[0]:xRange[1], yRange[0]:yRange[1]]
-                res = pytesseract.image_to_boxes(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
-                text = ""
-                # find spaces one character at a time
-                for num, char in enumerate(res['char']) :
-                    if(len(res['char'])<3):
-                        continue
-                    text = text + char
-                    if (num+1 < len(res['char'])):
-                        dist = res['left'][num+1] - res['right'][num]
-                        if ((char=="1" or char=="l") and dist >= 4 and dist <=5):
-                            dist = 3
-                        for dummy in (range(int(dist/4))): # 4 Pixels for as a guess for a single space between any letter for now
-                            text = text + " "
+                cv2.imwrite(debug_reader.final_time + "/ocr_lastbeforecrash.png", pn)
+                text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
+                text = text['text']
+                print(text)
+                if (len(text) >= 2):
+                    res = pytesseract.image_to_boxes(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
+                    text = ""
+                    # find spaces one character at a time
+                    for num, char in enumerate(res['char']) :
+                        if(len(res['char'])<3):
+                            continue
+                        text = text + char
+                        if (num+1 < len(res['char'])):
+                            dist = res['left'][num+1] - res['right'][num]
+                            if ((char=="1" or char=="l") and dist >= 4 and dist <=5):
+                                dist = 3
+                            for dummy in (range(int(dist/4))): # 4 Pixels for as a guess for a single space between any letter for now
+                                text = text + " "
+                else:
+                    text = ""
                 
-                index = index + 1
-                pNames.append(text)
+                pNames.append(text)             
                 if (debug_reader.debug_mode):
                     cv2.imwrite(debug_reader.final_time + "/ocr_" + str(index) + "_" + text + ".png", pn)
-                
+            index = index + 1
             lNames.append(pNames)
         pilotnames.append(lNames) 
     return pilotnames
