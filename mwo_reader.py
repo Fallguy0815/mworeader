@@ -19,11 +19,13 @@ from ocr import applyOcr
 from jarls import queryStructure
 from overlay import createOverlay
 from overlay import hideOverlay
+from overlay import showDebugImage
 
-debug_reader.debug_mode = 1
+debug_reader.debug_mode = 0
 debug_reader.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
 
 cv2.namedWindow('final', cv2.WINDOW_GUI_EXPANDED)
+cv2.moveWindow('final', 1921, 0)
 cv2.namedWindow(debug_reader.overlayTitle, cv2.WINDOW_GUI_NORMAL)
 cv2.waitKey(1)
 
@@ -39,10 +41,12 @@ while True:
         cv2.waitKey(5000)
         continue
     # 2) take screenshot
-    if(debug_reader.debug_mode):
+    if(debug_reader.debug_mode == 1):
+        print("using debug screen")
         screen = cv2.imread("screenshot_debug.png")
     else:
         screen = takeScreenshot(hwnd)
+    
     if(len(screen) < 30):
         print("Not a valid screenshot (mwo minimized?)")
         hideOverlay()
@@ -55,8 +59,8 @@ while True:
     gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
     gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
     # output image after we make sure we have a scoreboard in the picture
-    os.mkdir(debug_reader.final_time)
     
+
     
     # 4) Determine screenshot-type
     scoreBoardType = determineScoreboard(gray)
@@ -68,6 +72,8 @@ while True:
     
     
     # dump gray image for later examination
+    os.mkdir(debug_reader.final_time)
+    cv2.imwrite(debug_reader.final_time + "/screenshot_color.png",finalImage)
     cv2.imwrite(debug_reader.final_time + "/screenshot_gray.png", gray)
     # 5) get segmentation for gametype
     segs = getSegmentations(scoreBoardType)
@@ -79,7 +85,7 @@ while True:
     
     imgSeg = drawDebugRectangles(screen, segs)
     cv2.imwrite(debug_reader.final_time + "/segmented.png", imgSeg)
-    
+   
     # 6) get the actual pilot names
     pilotnames = applyOcr(gray, segs)
 
@@ -88,15 +94,12 @@ while True:
     
     # 8) put the final image together and show it
     imgOverlay = np.zeros((1080,1920,3), np.uint8)
-    overlayImage = getOverlay(imgOverlay, segs, pilotnames, pilotstats)
-    #finalImage = overlayImage(finalImage, overlayImage)
-    print(overlayImage.shape)
-    print(finalImage.shape)
-    finalImage = cv2.bitwise_and(finalImage, overlayImage)
-    cv2.imshow('final', finalImage)
-    cv2.imwrite(debug_reader.final_time + "/screenshot_final.png", finalImage)
-    createOverlay(hwnd, overlayImage)
-    cv2.waitKey(5000)
+    imgOverlay = getOverlay(imgOverlay, segs, pilotnames, pilotstats)
+    cv2.imwrite(debug_reader.final_time + "/overlay.png", imgOverlay)
+    cv2.imshow('final', showDebugImage(finalImage, imgOverlay))
+    if (not debug_reader.debug_mode == 1):
+        createOverlay(hwnd, imgOverlay)
+    cv2.waitKey(90000)
 
     
     
