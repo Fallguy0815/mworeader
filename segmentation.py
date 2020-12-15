@@ -17,7 +17,7 @@ colors = [blue, red, green, graycolor]
 def getSegmentations(gametype):
     segmentations = []
     loopBounds = [] # team, lance, pilots
-    if (gametype == "preGameQp"):
+    if (gametype == "preGameQP"):
         loopBounds = [2,3,4]
     if (gametype == "preGameSolaris"):
         loopBounds = [2,1,2]
