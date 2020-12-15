@@ -123,7 +123,7 @@ while True:
         cv2.imwrite(constants.finalTime + "/overlay.png", imgOverlay)
     if (constants.debugWindow == 1):
         cv2.imshow('final', combineOverlay(finalImage, imgOverlay))
-    if (not constants.overlay == 1):
+    if (constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
     lastTime = mktime(localtime())
     cv2.waitKey(3000)
