@@ -5,10 +5,11 @@ Created on Sat Nov 28 19:38:00 2020
 @author: johndoe
 """
 
-import debug_reader
+import constants
 import cv2
 import os
 import numpy as np
+from time import localtime, mktime
 from findWindow import findWindow
 from screenshot import takeScreenshot
 from scoreboardClassifier import determineScoreboard
@@ -19,36 +20,53 @@ from ocr import applyOcr
 from jarls import queryStructure
 from overlay import createOverlay
 from overlay import hideOverlay
-from overlay import showDebugImage
+from overlay import combineOverlay
 
-debug_reader.debug_mode = 0
-debug_reader.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
+constants.debugOutputFiles = 1
+constants.debugOutputConsole = 1
+constants.debugFakeInput = 0
+constants.debugWindow = 1
+constants.debugMoveWindow = 1
+constants.overlay = 1
+constants.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
 
-cv2.namedWindow('final', cv2.WINDOW_GUI_EXPANDED)
-cv2.moveWindow('final', 1921, 0)
-cv2.namedWindow(debug_reader.overlayTitle, cv2.WINDOW_GUI_NORMAL)
-cv2.waitKey(1)
+
+def debugOutputString(text):
+    if (constants.debugOutputConsole == 1):
+        print(text)
+
+if (constants.debugWindow == 1):
+    cv2.namedWindow('final', cv2.WINDOW_GUI_EXPANDED)
+    cv2.waitKey(1)
+    if (constants.debugMoveWindow  == 1):
+        cv2.moveWindow('final', 1921, 0) # Move to the right monitor
+        cv2.waitKey(1)
+
+if (constants.overlay == 1):
+    cv2.namedWindow(constants.overlayTitle, cv2.WINDOW_GUI_NORMAL)
+    cv2.waitKey(1)
 
 
 hideOverlay()
+lastTime = 0.0
 while True:
-    debug_reader.update()
+    constants.updateTimestamp()
     # 1) Find MWO window, set error and wait if not found
     hwnd = findWindow('mechwarrior online')
-    if (not debug_reader.debug_mode and not hwnd):
-        print("Mwo not found, waiting")
+    if (not constants.debugFakeInput == 1  and not hwnd):
+        debugOutputString("Mwo not found, waiting")
         hideOverlay()
         cv2.waitKey(5000)
         continue
     # 2) take screenshot
-    if(debug_reader.debug_mode == 1):
-        print("using debug screen")
+    if(constants.debugFakeInput == 1):
+        debugOutputString("using debug screen")
         screen = cv2.imread("screenshot_debug.png")
     else:
         screen = takeScreenshot(hwnd)
     
     if(len(screen) < 30):
-        print("Not a valid screenshot (mwo minimized?)")
+        debugOutputString("Not a valid screenshot (mwo minimized?)")
         hideOverlay()
         cv2.waitKey(3000)
         continue
@@ -65,27 +83,33 @@ while True:
     # 4) Determine screenshot-type
     scoreBoardType = determineScoreboard(gray)
     if (scoreBoardType != "preGameQP"):
-        print("Invalid gametype (Not implemented yet) or no scoreboard visible")
+        debugOutputString("Invalid gametype (Not implemented yet) or no scoreboard visible")
         hideOverlay()
-        cv2.waitKey(3000)
+        cv2.waitKey(500)
         continue
-    
+    if(mktime(localtime())-lastTime < 180.0):
+       debugOutputString("last ocr scoreboard photo was taken less than 3 minutes ago, assume still the same game")
+       cv2.waitKey(1500)
+       continue
     
     # dump gray image for later examination
-    os.mkdir(debug_reader.final_time)
-    cv2.imwrite(debug_reader.final_time + "/screenshot_color.png",finalImage)
-    cv2.imwrite(debug_reader.final_time + "/screenshot_gray.png", gray)
+    if (constants.debugOutputFiles):
+        os.mkdir(constants.finalTime)
+        cv2.imwrite(constants.Finaltime + "/screenshot_color.png",finalImage)
+        cv2.imwrite(constants.Finaltime + "/screenshot_gray.png", gray)
     # 5) get segmentation for gametype
     segs = getSegmentations(scoreBoardType)
     if (segs == []):
-        print("image segmentation not found")
+        debugOutputString("image segmentation not found")
         hideOverlay()
         cv2.waitKey(3000)
         continue
     
     imgSeg = drawDebugRectangles(screen, segs)
-    cv2.imwrite(debug_reader.final_time + "/segmented.png", imgSeg)
-   
+    if (constants.debugOutputFiles == 1):
+        cv2.imwrite(constants.finalTime + "/segmented.png", imgSeg)
+    
+    
     # 6) get the actual pilot names
     pilotnames = applyOcr(gray, segs)
 
@@ -95,11 +119,14 @@ while True:
     # 8) put the final image together and show it
     imgOverlay = np.zeros((1080,1920,3), np.uint8)
     imgOverlay = getOverlay(imgOverlay, segs, pilotnames, pilotstats)
-    cv2.imwrite(debug_reader.final_time + "/overlay.png", imgOverlay)
-    cv2.imshow('final', showDebugImage(finalImage, imgOverlay))
-    if (not debug_reader.debug_mode == 1):
+    if (constants.debugOutputFiles):
+        cv2.imwrite(constants.finalTime + "/overlay.png", imgOverlay)
+    if (constants.debugWindow == 1):
+        cv2.imshow('final', combineOverlay(finalImage, imgOverlay))
+    if (not constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
-    cv2.waitKey(90000)
+    lastTime = mktime(localtime())
+    cv2.waitKey(3000)
 
     
     

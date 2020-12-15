@@ -8,12 +8,12 @@ Created on Sat Nov 28 19:39:32 2020
 import win32gui
 
 toplist, winlist = [], []
-def enum_cb(hwnd, results):
+def enumCb(hwnd, results):
     winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
 
 def findWindow(windowName):
     windowName = windowName.lower()
-    win32gui.EnumWindows(enum_cb, toplist)
+    win32gui.EnumWindows(enumCb, toplist)
     wnd = [(hwnd, title) for hwnd, title in winlist if windowName in title.lower()]
     
     if(not wnd):

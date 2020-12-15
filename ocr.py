@@ -5,17 +5,18 @@ Created on Thu Nov 26 18:20:24 2020
 @author: johndoe
 """
 
-import debug_reader
+import constants
 import pytesseract
 from pytesseract import Output
 import cv2
-import sys
-
-
 
 # gray: screenshot in binary
 # segs: array of shape teams(2) * lances(3) * pilots(4) * points(2) * point(2)
 #  points is upper left, lower right, each with x,y
+
+def debugOutputString(text):
+    if (constants.debugOutputConsole == 1):
+        print(text)
 
 def applyOcr(gray, segs):
     pilotnames = []
@@ -32,10 +33,11 @@ def applyOcr(gray, segs):
                 yRange = [sPoint[0], ePoint[0]]
                 xRange = [sPoint[1], ePoint[1]]
                 pn = gray[xRange[0]:xRange[1], yRange[0]:yRange[1]]
-                cv2.imwrite(debug_reader.final_time + "/ocr_lastbeforecrash.png", pn)
+                if (constants.debugOutputFiles == 1):
+                    cv2.imwrite(constants.finalTime + "/ocr_lastbeforecrash.png", pn)
                 text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                 text = text['text']
-                print(text)
+                debugOutputString(text)
                 if (len(text) >= 2):
                     res = pytesseract.image_to_boxes(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                     text = ""
@@ -54,8 +56,8 @@ def applyOcr(gray, segs):
                     text = ""
                 
                 pNames.append(text)             
-                if (debug_reader.debug_mode):
-                    cv2.imwrite(debug_reader.final_time + "/ocr_" + str(index) + "_" + text + ".png", pn)
+                if (constants.debugOutputFiles):
+                    cv2.imwrite(constants.finalTime + "/ocr_" + str(index) + "_" + text + ".png", pn)
             index = index + 1
             lNames.append(pNames)
         pilotnames.append(lNames) 

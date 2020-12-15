@@ -6,7 +6,7 @@ Created on Sat Nov 28 19:39:32 2020
 """
 
 from findWindow import findWindow
-import debug_reader
+import constants
 import win32gui
 import winxpgui
 import win32con
@@ -17,7 +17,9 @@ from PIL import Image
 import numpy as np
 
 def hideOverlay():
-    hwndCv = findWindow(debug_reader.overlayTitle)
+    if(constants.overlay != 1):
+        return
+    hwndCv = findWindow(constants.overlayTitle)
     wndLongStyle = win32gui.GetWindowLong(hwndCv, win32con.GWL_STYLE)
     wndLongStyle = wndLongStyle & (~(win32con.WS_VISIBLE))
     win32gui.SetWindowLong(hwndCv,win32con.GWL_STYLE,wndLongStyle)
@@ -25,6 +27,8 @@ def hideOverlay():
     
 
 def createOverlay(hwnd, imgOverlay):
+    if (constants.overlay != 1):
+        return
     bbox = win32gui.GetWindowRect(hwnd)
     time.sleep(0.2)
     width = bbox[2] - bbox[0]
@@ -33,8 +37,8 @@ def createOverlay(hwnd, imgOverlay):
         return
     
     
-    hwndCv = findWindow(debug_reader.overlayTitle)
-    cv2.resizeWindow(debug_reader.overlayTitle,width,height)
+    hwndCv = findWindow(constants.overlayTitle)
+    cv2.resizeWindow(constants.overlayTitle,width,height)
     
     wndLongEx = win32gui.GetWindowLong(hwndCv, win32con.GWL_EXSTYLE)
     additionalStyle = win32con.WS_EX_TOPMOST | win32con.WS_EX_TRANSPARENT | win32con.WS_EX_COMPOSITED | win32con.WS_EX_LAYERED | win32con.WS_EX_NOACTIVATE
@@ -44,11 +48,12 @@ def createOverlay(hwnd, imgOverlay):
     win32gui.SetWindowLong(hwndCv, win32con.GWL_STYLE, wndLongStyle)
     win32gui.SetWindowPos(hwndCv,-1, bbox[0], bbox[1], width, height, 0)
     winxpgui.SetLayeredWindowAttributes(hwndCv, win32api.RGB(0,0,0), 255, win32con.LWA_COLORKEY )
-    cv2.imshow(debug_reader.overlayTitle,imgOverlay)
+    cv2.imshow(constants.overlayTitle,imgOverlay)
     cv2.waitKey(1)
     
     
-def showDebugImage(image_src, overlay):
+def combineOverlay(image_src, overlay):
+    # alpha blending in PIL with some mumbo jumbo to convert between PIL and CV2 color-spaces
     rgba_b = cv2.cvtColor(image_src, cv2.COLOR_RGB2RGBA)
     rgba_b[:, :, 3] = np.full((1080, 1920), 255)
 
@@ -65,13 +70,13 @@ def showDebugImage(image_src, overlay):
 
     background = Image.fromarray(rgba_b, mode='RGBA')
     foreground = Image.fromarray(rgba_f, mode='RGBA')
-    background.save(debug_reader.final_time + '/background.png')
-    foreground.save(debug_reader.final_time + '/foreground.png')
     pil_result = Image.alpha_composite(background, foreground)
-    pil_result.save(debug_reader.final_time + "/combined_image.png")
-     # Convert RGB to BGR 
+
+    if (constants.debugOutputFiles == 1):
+        background.save(constants.finalTime + '/background.png')
+        foreground.save(constants.finalTime + '/foreground.png')
+        pil_result.save(constants.finalTime + "/combined_image.png")
     pil_ret = np.array(pil_result.convert('RGB')) 
-    #print(pil_ret.shape)
     open_cv_image = pil_ret[:, :, ::-1].copy()
     return open_cv_image
     
