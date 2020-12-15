@@ -16,33 +16,35 @@ colors = [blue, red, green, graycolor]
 
 def getSegmentations(gametype):
     segmentations = []
-    
-    if (gametype == "preGameQP"):
-        start = np.array([350,200])
-        box = np.array([292,24])
-        end = start + box
+    loopBounds = [] # team, lance, pilots
+    if (gametype == "preGameQp"):
+        loopBounds = [2,3,4]
+    if (gametype == "preGameSolaris"):
+        loopBounds = [2,1,2]
+    if (loopBounds == []):
+        return loopBounds # gametype not defined
+    start = np.array([350,200])
+    box = np.array([292,24])
+    end = start + box
+    current = np.copy(start)
+
+    for teams in range(loopBounds[0]):
+        lBoxes = []
+        for lances in range(loopBounds[1]):
+            pBoxes = []
+            for pilots in range(loopBounds[2]):
+                end = current + box
+                # Pilot name box: 
+                pBoxes.append([np.copy(current), np.copy(end)])
+                current[1] = current[1] + box [1] + 2
+
+            lBoxes.append(pBoxes)                                    
+            current[1] = current[1] + 2
+        segmentations.append(lBoxes)
         current = np.copy(start)
-
-        for teams in range(2):
-            lBoxes = []
-            for lances in range(3):
-                pBoxes = []
-                for pilots in range(4):
-                    end = current + box
-                    # Pilot name box: 
-                    pBoxes.append([np.copy(current), np.copy(end)])
-                    current[1] = current[1] + box [1] + 2
-
-                lBoxes.append(pBoxes)                                    
-                current[1] = current[1] + 2
-            segmentations.append(lBoxes)
-            current = np.copy(start)
-            current[0] = current[0] + 960
-                    
-
-        return segmentations
-    # Game mode not found:
-    return []
+        current[0] = current[0] + 960
+                
+    return segmentations
 
 
 def drawDebugRectangles(img, segmentations):    
@@ -58,9 +60,10 @@ def drawDebugRectangles(img, segmentations):
     return img
 
 def getOverlay(screen, segs, pilotnames, pilotstats):
-    for teamNr in range(2):
-        for lanceNr in range(3):
-            for pilotNr in range(4):
+    print(len(segs))
+    for teamNr in range(len(segs)):
+        for lanceNr in range(len(segs[teamNr])):
+            for pilotNr in range(len(segs[teamNr][lanceNr])):
                 ocrName = pilotnames[teamNr][lanceNr][pilotNr]
                 stats = pilotstats.get(ocrName, "XX")
                 sPoint = segs[teamNr][lanceNr][pilotNr][0]

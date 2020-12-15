@@ -13,6 +13,12 @@ def determineScoreboard(gray):
     text = getText(gray, upperLeft, lowerRight)
     # Do not test for full string (DROP PREPARATION, because on Witer maps the first part gets obscured)
     if (text[-8:] == "PARATION"):
-        return "preGameQP"
+        upperLeft = [320,560]
+        lowerRight = [465, 595]
+        text = getText(gray, upperLeft, lowerRight)
+        if (text == "Solaris"):
+            return "preGameSolaris"
+        else:
+            return "preGameQP"
     else:
         return ""

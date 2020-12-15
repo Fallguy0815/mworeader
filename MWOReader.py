@@ -82,7 +82,7 @@ while True:
     
     # 4) Determine screenshot-type
     scoreBoardType = determineScoreboard(gray)
-    if (scoreBoardType != "preGameQP"):
+    if (scoreBoardType == ""):
         debugOutputString("Invalid gametype (Not implemented yet) or no scoreboard visible")
         hideOverlay()
         cv2.waitKey(500)
@@ -95,8 +95,8 @@ while True:
     # dump gray image for later examination
     if (constants.debugOutputFiles):
         os.mkdir(constants.finalTime)
-        cv2.imwrite(constants.Finaltime + "/screenshot_color.png",finalImage)
-        cv2.imwrite(constants.Finaltime + "/screenshot_gray.png", gray)
+        cv2.imwrite(constants.finalTime + "/screenshot_color.png",finalImage)
+        cv2.imwrite(constants.finalTime + "/screenshot_gray.png", gray)
     # 5) get segmentation for gametype
     segs = getSegmentations(scoreBoardType)
     if (segs == []):
