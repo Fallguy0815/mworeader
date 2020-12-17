@@ -66,9 +66,9 @@ def putText(img, text, pos):
     cv2.putText(img, text, pos, cv2.FONT_HERSHEY_TRIPLEX, 0.6, (255,255,255), 1)
 
 def createStatsGraph(img, percentiles):
-    # img[100:,0:,] = np.full((720, 1700), 255)
+    # clear overall statistics area
     cv2.rectangle(img,(0,590),(1920,820),(10,10,10),-1)
-    #img[600:600+220,0:+1700] = np.ones((220,1700,3), np.uint8)
+    
     team1 = percentiles[0]
     team2 = percentiles[0]
     
@@ -121,6 +121,10 @@ def createStatsGraph(img, percentiles):
 
 def getOverlay(screen, segs, pilotnames, pilotstats):
     percentiles = [[],[]]
+    # clear pilot name area for team 1
+    cv2.rectangle(screen,(465,200),(640,516),(4,4,4),-1)
+    cv2.rectangle(screen,(1430,200),(1640,516),(4,4,4),-1)
+
     for teamNr in range(len(segs)):
         for lanceNr in range(len(segs[teamNr])):
             for pilotNr in range(len(segs[teamNr][lanceNr])):
