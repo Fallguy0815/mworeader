@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import numpy as np
 import constants
+import random
 
 sep = "\r\n"
 
@@ -24,7 +25,19 @@ def queryStructure(pilotnames):
     structured = np.array(pilotnames)
     flat = structured.flatten()
     filtered = list(filter(None, flat))
-    return queryList(filtered)
+    if (constants.debugFakeInput == 1):
+        pilotstats = {}
+        for name in filtered:
+            dict = {}
+            dict['name'] = name
+            dict['rank'] =  str(random.randint(1,50000))
+            dict['prank'] = str(round(random.random()*100.0)) + "%"
+            print(pilotnames)
+            print(dict)
+            pilotstats[name] = dict.copy()
+        return pilotstats
+    else:
+        return queryList(filtered)
     
 
 def queryList(pilotsflat):

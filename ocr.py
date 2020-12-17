@@ -18,7 +18,10 @@ def debugOutputString(text):
     if (constants.debugOutputConsole == 1):
         print(text)
 
+
 def applyOcr(gray, segs):
+    if (constants.debugFakeInput == 1):
+       return [[['R O H A N', '', '', ''], ['', '', '', ''], ['', '', '', '']], [['I V A R', '', '', ''], ['', '', '', ''], ['', '', '', '']]]
     pilotnames = []
     index = 0
     for team in segs:
@@ -33,8 +36,6 @@ def applyOcr(gray, segs):
                 yRange = [sPoint[0], ePoint[0]]
                 xRange = [sPoint[1], ePoint[1]]
                 pn = gray[xRange[0]:xRange[1], yRange[0]:yRange[1]]
-                if (constants.debugOutputFiles == 1):
-                    cv2.imwrite(constants.finalTime + "/ocr_lastbeforecrash.png", pn)
                 text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                 text = text['text']
                 debugOutputString(text)

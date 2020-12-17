@@ -22,12 +22,12 @@ from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
 
-constants.debugOutputFiles = 1
+constants.debugOutputFiles = 0
 constants.debugOutputConsole = 1
-constants.debugFakeInput = 0
+constants.debugFakeInput = 1
 constants.debugWindow = 1
 constants.debugMoveWindow = 1
-constants.overlay = 1
+constants.overlay = 0
 constants.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
 
 
@@ -36,7 +36,7 @@ def debugOutputString(text):
         print(text)
 
 if (constants.debugWindow == 1):
-    cv2.namedWindow('final', cv2.WINDOW_GUI_EXPANDED)
+    cv2.namedWindow('final', cv2.WINDOW_GUI_EXPANDED | cv2.WINDOW_AUTOSIZE | cv2.WINDOW_KEEPRATIO )
     cv2.waitKey(1)
     if (constants.debugMoveWindow  == 1):
         cv2.moveWindow('final', 1921, 0) # Move to the right monitor
@@ -122,7 +122,9 @@ while True:
     if (constants.debugOutputFiles):
         cv2.imwrite(constants.finalTime + "/overlay.png", imgOverlay)
     if (constants.debugWindow == 1):
-        cv2.imshow('final', combineOverlay(finalImage, imgOverlay))
+        combined = combineOverlay(finalImage, imgOverlay)
+        #sb = combined[30:850,80:1780]
+        cv2.imshow('final', combined)
     if (constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
     lastTime = mktime(localtime())
