@@ -16,6 +16,9 @@ import cv2
 from PIL import Image
 import numpy as np
 
+
+
+
 def hideOverlay():
     if(constants.overlay != 1):
         return
@@ -27,6 +30,13 @@ def hideOverlay():
     
 
 def createOverlay(hwnd, imgOverlay):
+    if (constants.debugOutputConsole == 1):
+        print("Overlay: start")
+        plc = win32gui.GetWindowPlacement(hwnd)
+        # TODO: Find a "real" way to test if MWO is running Fullscreen or FullWindowed
+        if (plc[0] != 2 or plc[1] != 3):
+            print("******* Overlay: Does not work on fullscreen MWO ******")
+
     if (constants.overlay != 1):
         return
     bbox = win32gui.GetWindowRect(hwnd)
@@ -34,6 +44,8 @@ def createOverlay(hwnd, imgOverlay):
     width = bbox[2] - bbox[0]
     height = bbox[3] - bbox[1]
     if (height < 10 or width < 10):
+        if (constants.debugOutputConsole == 1):
+            print("Overlay: height/width < 10, aborting")
         return
     
     
@@ -48,6 +60,9 @@ def createOverlay(hwnd, imgOverlay):
     win32gui.SetWindowLong(hwndCv, win32con.GWL_STYLE, wndLongStyle)
     win32gui.SetWindowPos(hwndCv,-1, bbox[0], bbox[1], width, height, 0)
     winxpgui.SetLayeredWindowAttributes(hwndCv, win32api.RGB(0,0,0), 255, win32con.LWA_COLORKEY )
+    if (constants.debugOutputConsole == 1):
+        print("Overlay: set visible")
+
     cv2.imshow(constants.overlayTitle,imgOverlay)
     cv2.waitKey(1)
     
