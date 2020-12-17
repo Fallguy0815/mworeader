@@ -21,14 +21,13 @@ from jarls import queryStructure
 from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
-import sys
 
-constants.debugOutputFiles = 0
+constants.debugOutputFiles = 1
 constants.debugOutputConsole = 1
-constants.debugFakeInput = 1
+constants.debugFakeInput = 0
 constants.debugWindow = 1
 constants.debugMoveWindow = 1
-constants.overlay = 0
+constants.overlay = 1
 constants.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
 
 
@@ -129,9 +128,8 @@ while True:
     if (constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
     lastTime = mktime(localtime())
-    cv2.waitKey(13000)
-    sys.exit(0)
-
+    cv2.waitKey(3000)
+    
     
     
     

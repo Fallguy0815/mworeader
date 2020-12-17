@@ -89,10 +89,6 @@ def createStatsGraph(img, percentiles):
     line21 = "Avg: " + str(mean2) + " median: " + str(med2)
     line22 = "qs: " + str(q2)
     
-    
-    print (line11 + line12)
-    print (line21 + line22)
-    
 
     putText(img, line11, (120,650))
     putText(img, line12, (120,680))
@@ -103,7 +99,6 @@ def createStatsGraph(img, percentiles):
     data = []
     with plt.xkcd():
     # This figure will be in XKCD-style
-        print(plt.style.available)            
         plt.style.use(['dark_background'])
         fig, ax = plt.subplots(figsize=(20, 4), dpi=50)
         ax.boxplot([team1,team2], vert=False, showmeans=True) #, cmap=cm.coolwarm)
@@ -113,7 +108,6 @@ def createStatsGraph(img, percentiles):
         open_cv_image = data[:, :, ::-1].copy()
         open_cv_image[np.where((open_cv_image==[0,0,0]).all(axis=2))] = [10,10,10]
     
-    print(open_cv_image.shape)
     img[600:600+200,410:410+1000] = open_cv_image[:,:]
     return img
 

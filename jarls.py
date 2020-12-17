@@ -32,8 +32,6 @@ def queryStructure(pilotnames):
             dict['name'] = name
             dict['rank'] =  str(random.randint(1,50000))
             dict['prank'] = str(round(random.random()*100.0)) + "%"
-            print(pilotnames)
-            print(dict)
             pilotstats[name] = dict.copy()
         return pilotstats
     else:
@@ -67,7 +65,6 @@ def queryList(pilotsflat):
                 for key in statistics:
                     resolved = parent.find("td", attrs={"class": key}).text
                     dict[key] = resolved
-                    # DEBUG
                     debugOutputString(statistics[key] + ": " + resolved)
                 pilotstats[at] = dict.copy()
             else:
