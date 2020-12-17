@@ -124,7 +124,7 @@ while True:
         cv2.imwrite(constants.finalTime + "/overlay.png", imgOverlay)
     if (constants.debugWindow == 1):
         combined = combineOverlay(finalImage, imgOverlay)
-        sb = combined[30:850,80:1780]
+        sb = combined[30:820,80:1780]
         cv2.imshow('final', sb)
     if (constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
