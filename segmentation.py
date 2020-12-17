@@ -102,6 +102,7 @@ def createStatsGraph(img, percentiles):
         plt.style.use(['dark_background'])
         fig, ax = plt.subplots(figsize=(20, 4), dpi=50)
         ax.boxplot([team1,team2], vert=False, showmeans=True) #, cmap=cm.coolwarm)
+        plt.xlim(0,100)
         fig.canvas.draw()
         data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
         data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
