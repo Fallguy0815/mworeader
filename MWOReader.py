@@ -9,7 +9,7 @@ import constants
 import cv2
 import os
 import numpy as np
-from time import localtime, mktime
+from time import localtime, mktime, sleep
 from findWindow import findWindow
 from screenshot import takeScreenshot
 from scoreboardClassifier import determineScoreboard
@@ -22,13 +22,15 @@ from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
 
-constants.debugOutputFiles = 1
+constants.debugOutputFiles = 0
 constants.debugOutputConsole = 1
 constants.debugFakeInput = 0
 constants.debugWindow = 1
 constants.debugMoveWindow = 1
 constants.overlay = 1
 constants.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
+
+firstNVSmessage = 1
 
 
 def debugOutputString(text):
@@ -66,7 +68,7 @@ while True:
         screen = takeScreenshot(hwnd)
     
     if(len(screen) < 30):
-        debugOutputString("Not a valid screenshot (mwo minimized?)")
+        debugOutputString("Not a valid screenshot (mwo minimized?) ")
         hideOverlay()
         cv2.waitKey(3000)
         continue
@@ -83,10 +85,17 @@ while True:
     # 4) Determine screenshot-type
     scoreBoardType = determineScoreboard(gray)
     if (scoreBoardType == ""):
-        debugOutputString("Invalid gametype (Not implemented yet) or no scoreboard visible")
+        if (constants.debugOutputConsole == 1):
+            if (firstNVSmessage == 1):
+                print("Invalid gametype (Not implemented yet) or no scoreboard visible")
+                firstNVSmessage = 0
+            else:
+                print(".",end='', flush=True)
+                sleep(1)
         hideOverlay()
         cv2.waitKey(1500)
         continue
+    firstNVSmessage = 1
     if(mktime(localtime())-lastTime < 180.0):
        debugOutputString("last ocr scoreboard photo was taken less than 3 minutes ago, assume still the same game")
        cv2.waitKey(1500)
