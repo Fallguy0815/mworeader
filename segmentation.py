@@ -70,7 +70,7 @@ def createStatsGraph(img, percentiles):
     cv2.rectangle(img,(0,590),(1920,820),(10,10,10),-1)
     
     team1 = percentiles[0]
-    team2 = percentiles[0]
+    team2 = percentiles[1]
     
     team1.sort()
     team2.sort()
@@ -133,8 +133,13 @@ def getOverlay(screen, segs, pilotnames, pilotstats):
                 else:
                     color = green
                     output = stats["rank"] + "(" + stats["prank"] + ")" #DEBUG  W/L: " + stats["wlr"] + ", K/D: " + stats["kd"]
-                    percentile = int(stats['prank'].replace('%', ''))
-                    percentiles[teamNr].append(percentile)
+                    percentile = -1
+                    try:
+                        percentile = int(stats['prank'].replace('%', ''))
+                    except:
+                        percentile = -1
+                    if (percentile >= 0):
+                        percentiles[teamNr].append(percentile)
                 cv2.putText(screen, output, (sPoint[0]+130, sPoint[1]+17), cv2.FONT_HERSHEY_TRIPLEX, 0.6, color, 1)
         
     createStatsGraph(screen, percentiles)

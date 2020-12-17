@@ -85,7 +85,7 @@ while True:
     if (scoreBoardType == ""):
         debugOutputString("Invalid gametype (Not implemented yet) or no scoreboard visible")
         hideOverlay()
-        cv2.waitKey(500)
+        cv2.waitKey(1500)
         continue
     if(mktime(localtime())-lastTime < 180.0):
        debugOutputString("last ocr scoreboard photo was taken less than 3 minutes ago, assume still the same game")
