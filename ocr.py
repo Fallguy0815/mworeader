@@ -21,7 +21,7 @@ def debugOutputString(text):
 
 def applyOcr(gray, segs):
     if (constants.debugFakeInput == 1):
-       return [[['R O H A N', '', '', ''], ['', '', '', ''], ['', '', '', '']], [['I V A R', '', '', ''], ['', '', '', ''], ['', '', '', '']]]
+       return [[['Dasher', 'Dancer', 'Prancer', 'Vixen'], ['', '', '', ''], ['', '', '', '']], [['Comet', 'Cupid', 'Donner', 'Blitzen'], ['Rudolph', '', '', ''], ['', '', '', '']]]
     pilotnames = []
     index = 0
     for team in segs:

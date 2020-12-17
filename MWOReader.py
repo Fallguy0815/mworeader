@@ -21,6 +21,7 @@ from jarls import queryStructure
 from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
+import sys
 
 constants.debugOutputFiles = 0
 constants.debugOutputConsole = 1
@@ -123,12 +124,13 @@ while True:
         cv2.imwrite(constants.finalTime + "/overlay.png", imgOverlay)
     if (constants.debugWindow == 1):
         combined = combineOverlay(finalImage, imgOverlay)
-        #sb = combined[30:850,80:1780]
-        cv2.imshow('final', combined)
+        sb = combined[30:850,80:1780]
+        cv2.imshow('final', sb)
     if (constants.overlay == 1):
         createOverlay(hwnd, imgOverlay)
     lastTime = mktime(localtime())
-    cv2.waitKey(3000)
+    cv2.waitKey(13000)
+    sys.exit(0)
 
     
     
