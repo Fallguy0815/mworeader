@@ -2,3 +2,11 @@
 *.pyc
 *.png
 *.txt
+trainingdata/font_properties
+trainingdata/mwosb.font.exp0.tr
+trainingdata/mwosb.inttemp
+trainingdata/mwosb.normproto
+trainingdata/mwosb.pffmtable
+trainingdata/mwosb.shapetable
+trainingdata/mwosb.unicharset
+trainingdata/unicharset
