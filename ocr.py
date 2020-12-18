@@ -36,11 +36,11 @@ def applyOcr(gray, segs):
                 yRange = [sPoint[0], ePoint[0]]
                 xRange = [sPoint[1], ePoint[1]]
                 pn = gray[xRange[0]:xRange[1], yRange[0]:yRange[1]]
-                text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
+                text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -l mwosb -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                 text = text['text']
                 debugOutputString(text)
                 if (len(text) >= 2):
-                    res = pytesseract.image_to_boxes(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
+                    res = pytesseract.image_to_boxes(pn, output_type=Output.DICT, config='--psm 7 -l mwosb -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                     text = ""
                     # find spaces one character at a time
                     for num, char in enumerate(res['char']) :
@@ -66,6 +66,6 @@ def applyOcr(gray, segs):
 
 def getText(img, upperLeft, lowerRight):
     src = img[upperLeft[1]:lowerRight[1], upperLeft[0]:lowerRight[0]]
-    text = pytesseract.image_to_string(src, config='--psm 7 -c preserve_interword_spaces=1 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')[:-2]
+    text = pytesseract.image_to_string(src, config='--psm 7 -l mwosb -c preserve_interword_spaces=1 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')[:-2]
     return text
     
