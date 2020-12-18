@@ -25,7 +25,7 @@ def queryStructure(pilotnames):
     structured = np.array(pilotnames)
     flat = structured.flatten()
     filtered = list(filter(None, flat))
-    if (constants.debugFakeInput == 1):
+    if (constants.debugFakeInput == 1 and constants.skipjarl == 1):
         pilotstats = {}
         for name in filtered:
             dict = {}

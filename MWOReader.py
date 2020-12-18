@@ -22,12 +22,14 @@ from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
 
-constants.debugOutputFiles = 0
+constants.debugOutputFiles = 1
 constants.debugOutputConsole = 1
-constants.debugFakeInput = 0
-constants.debugWindow = 1
-constants.debugMoveWindow = 1
-constants.overlay = 1
+constants.debugFakeInput = 1
+constants.debugWindow = 0
+constants.debugMoveWindow = 0
+constants.overlay = 0
+constants.skipjarl = 1
+constants.skipocr = 0
 constants.overlayTitle = "a0e28dbb-1273-464e-b1ad-e5acc1ecb4fb"
 
 firstNVSmessage = 1
@@ -73,11 +75,12 @@ while True:
         cv2.waitKey(3000)
         continue
     finalImage = screen.copy()
+    gray = screen.copy()
 
-    # 3) convert to gray for OCR
-    gray = cv2.cvtColor(screen, cv2.COLOR_RGB2GRAY)
-    gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
-    gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
+    # 3) convert to gray for OCR (now done in each ocr pass)
+    # gray = cv2.cvtColor(screen, cv2.COLOR_RGB2GRAY)
+    # gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
+    # gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
     # output image after we make sure we have a scoreboard in the picture
     
 

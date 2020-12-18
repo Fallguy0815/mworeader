@@ -11,6 +11,8 @@ global debugWindow
 global debugMoveWindow
 
 global debugFakeInput
+global skipjarl
+global skipocr
 
 global overlay
 global overlayTitle
