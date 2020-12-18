@@ -24,7 +24,7 @@ def toGray(img):
     gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
     return gray
 
-def applyOcr(gray, segs):
+def applyOcr(img, segs):
     if (constants.debugFakeInput == 1 and constants.skipocr == 1):
        return [[['Dasher', 'Dancer', 'Prancer', 'Vixen'], ['', '', '', ''], ['', '', '', '']], [['Comet', 'Cupid', 'Donner', 'Blitzen'], ['Rudolph', '', '', ''], ['', '', '', '']]]
     pilotnames = []
@@ -40,8 +40,8 @@ def applyOcr(gray, segs):
                 # tesseract expects x:y in reverse order than opencv
                 yRange = [sPoint[0], ePoint[0]]
                 xRange = [sPoint[1], ePoint[1]]
-                pn = gray[xRange[0]:xRange[1], yRange[0]:yRange[1]]
-                pn = toGray(pn)
+                colPn = img[xRange[0]:xRange[1], yRange[0]:yRange[1]]
+                pn = toGray(colPn.copy())
                 text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                 text = text['text']
                 debugOutputString(text)
@@ -64,7 +64,8 @@ def applyOcr(gray, segs):
                 
                 pNames.append(text)             
                 if (constants.debugOutputFiles):
-                    cv2.imwrite(constants.finalTime + "/ocr_" + str(index) + "_" + text + ".png", pn)
+                    cv2.imwrite(constants.finalTime + "/ocr_c_" + str(index) + "_" + text + ".png", pn)
+                    cv2.imwrite(constants.finalTime + "/ocr_g_" + str(index) + "_" + text + ".png", colPn)
             index = index + 1
             lNames.append(pNames)
         pilotnames.append(lNames) 
