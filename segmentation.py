@@ -75,14 +75,19 @@ def createStatsGraph(img, percentiles):
     team1.sort()
     team2.sort()
     
-    mean1 = round(mean(team1),2)
-    mean2 = round(mean(team2),2)
+    try:
     
-    med1 = round(median(team1),2)
-    med2 = round(median(team2),2)
-
-    q1 = quantiles(team1)
-    q2 = quantiles(team2)
+        mean1 = round(mean(team1),2)
+        mean2 = round(mean(team2),2)
+    
+        med1 = round(median(team1),2)
+        med2 = round(median(team2),2)
+    
+        q1 = quantiles(team1)
+        q2 = quantiles(team2)
+    except:
+        # might happen on solaris if one of the players is not recognized
+        return img
     
     line11 = "Avg: " + str(mean1) + " median: " + str(med1)
     line12 = "qs: " + str(q1)
@@ -92,17 +97,18 @@ def createStatsGraph(img, percentiles):
 
     putText(img, line11, (120,650))
     putText(img, line12, (120,680))
-    putText(img, line21, (1500,650))
-    putText(img, line22, (1500,680))
-    
+    putText(img, line21, (1500,730))
+    putText(img, line22, (1500,760))
     
     data = []
     with plt.xkcd():
     # This figure will be in XKCD-style
         plt.style.use(['dark_background'])
         fig, ax = plt.subplots(figsize=(20, 4), dpi=50)
-        ax.boxplot([team1,team2], vert=False, showmeans=True) #, cmap=cm.coolwarm)
+        ax.boxplot([team2,team1], vert=False, showmeans=True) #, cmap=cm.coolwarm)
         plt.xlim(0,100)
+        plt.yticks([])
+        plt.rcParams["axes.grid"] = False
         fig.canvas.draw()
         data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
         data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
@@ -136,9 +142,9 @@ def getOverlay(screen, segs, pilotnames, pilotstats):
                     output = stats["rank"] + "(" + stats["prank"] + ")" #DEBUG  W/L: " + stats["wlr"] + ", K/D: " + stats["kd"]
                     percentile = -1
                     try:
-                        percentile = int(stats['prank'].replace('%', ''))
+                        percentile = float(stats['prank'].replace('%', ''))
                     except:
-                        percentile = -1
+                        percentile = -1.0
                     if (percentile >= 0):
                         percentiles[teamNr].append(percentile)
                 cv2.putText(screen, output, (sPoint[0]+130, sPoint[1]+17), cv2.FONT_HERSHEY_TRIPLEX, 0.6, color, 1)

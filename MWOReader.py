@@ -22,7 +22,7 @@ from overlay import createOverlay
 from overlay import hideOverlay
 from overlay import combineOverlay
 
-constants.debugOutputFiles = 1
+constants.debugOutputFiles = 0
 constants.debugOutputConsole = 1
 constants.debugFakeInput = 0
 constants.debugWindow = 1
@@ -75,6 +75,7 @@ while True:
         cv2.waitKey(3000)
         continue
     finalImage = screen.copy()
+    ocrImage = screen.copy()
 
     
     # 3) Determine screenshot-type
@@ -114,7 +115,7 @@ while True:
     
     
     # 5) get the actual pilot names
-    pilotnames = applyOcr(screen, segs)
+    pilotnames = applyOcr(ocrImage, segs)
 
     # 6) get jarls list values
     pilotstats = queryStructure(pilotnames)

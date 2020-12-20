@@ -20,7 +20,7 @@ def debugOutputString(text):
 
 def toGray(img):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray, img_bin = cv2.threshold(gray,0,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
+    gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
     gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
     return gray
 
@@ -42,6 +42,7 @@ def applyOcr(img, segs):
                 xRange = [sPoint[1], ePoint[1]]
                 colPn = img[xRange[0]:xRange[1], yRange[0]:yRange[1]]
                 pn = toGray(colPn.copy())
+                boxPn = colPn.copy()
                 text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
                 text = text['text']
                 debugOutputString(text)
@@ -53,19 +54,24 @@ def applyOcr(img, segs):
                         if(len(res['char'])<3):
                             continue
                         text = text + char
+                        (x1, y1, x2, y2) = (res['left'][num], res['top'][num], res['right'][num], res['bottom'][num])
+                        cv2.rectangle(boxPn, (x1, y1), (x2, y2), (0, 255, 0), 1)
                         if (num+1 < len(res['char'])):
+
                             dist = res['left'][num+1] - res['right'][num]
-                            if ((char=="1" or char=="l") and dist >= 4 and dist <=5):
-                                dist = 3
-                            for dummy in (range(int(dist/4))): # 4 Pixels for as a guess for a single space between any letter for now
+                            
+                            if ((char=="1" or char=="l") and dist >= 5 and dist <=6):
+                                dist = 4
+                            for dummy in (range(int(dist/5))): # 5 Pixels for as a guess for a single space between any letter for now
                                 text = text + " "
                 else:
                     text = ""
                 
                 pNames.append(text)             
                 if (constants.debugOutputFiles):
-                    cv2.imwrite(constants.finalTime + "/ocr_c_" + str(index) + "_" + text + ".png", pn)
-                    cv2.imwrite(constants.finalTime + "/ocr_g_" + str(index) + "_" + text + ".png", colPn)
+                    cv2.imwrite(constants.finalTime + "/ocr_g_" + str(index) + "_" + text + ".png", pn)
+                    cv2.imwrite(constants.finalTime + "/ocr_c_" + str(index) + "_" + text + ".png", colPn)
+                    cv2.imwrite(constants.finalTime + "/ocr_b_" + str(index) + "_" + text + ".png", boxPn)
             index = index + 1
             lNames.append(pNames)
         pilotnames.append(lNames) 
