@@ -3,7 +3,6 @@ import requests
 import numpy as np
 import constants
 import random
-import json
 
 sep = "\r\n"
 
@@ -39,18 +38,8 @@ def queryStructure(pilotnames):
         return queryList(filtered)
     
 
-def replaceKnownErrors(pa):
-    with open("lut.json") as f:
-        data = json.load(f)
-        for pilot in pa:
-            if pilot in data:
-                debugOutputString(pilot + " ==>" + data[pilot])
-                pa[pilot] = data[pilot]
 
 def queryList(pilotsflat):
-    debugOutputString(pilotsflat)
-    replaceKnownErrors(pilotsflat)
-    debugOutputString(pilotsflat)
     allpilots = sep.join(pilotsflat)
     ploads = {'u':allpilots}
     misses = []
