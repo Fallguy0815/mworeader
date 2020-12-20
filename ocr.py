@@ -72,7 +72,7 @@ def applyOcr(img, segs):
                     cv2.imwrite(constants.finalTime + "/ocr_g_" + str(index) + "_" + text + ".png", pn)
                     cv2.imwrite(constants.finalTime + "/ocr_c_" + str(index) + "_" + text + ".png", colPn)
                     cv2.imwrite(constants.finalTime + "/ocr_b_" + str(index) + "_" + text + ".png", boxPn)
-            index = index + 1
+                    index = index + 1
             lNames.append(pNames)
         pilotnames.append(lNames) 
     return pilotnames
