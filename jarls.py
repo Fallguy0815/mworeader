@@ -53,6 +53,7 @@ def queryList(pilotsflat):
     debugOutputString(pilotsflat)
     allpilots = sep.join(pilotsflat)
     ploads = {'u':allpilots}
+    misses = []
     
     resp = requests.get('https://leaderboard.isengrim.org/search',params=ploads)
     pilotstats = {}
@@ -67,6 +68,7 @@ def queryList(pilotsflat):
                     r.write(resp.text)
         soup = BeautifulSoup(resp.text, "lxml")
         tds = soup.find_all("td", attrs={"class": "name"})
+        
         for td in tds:
             at = td.find("a").text.strip().replace('\xa0', '\x20')
             if at in pilotsflat:
@@ -79,6 +81,12 @@ def queryList(pilotsflat):
                     debugOutputString(statistics[key] + ": " + resolved)
                 pilotstats[at] = dict.copy()
             else:
-                pilotstats[at] = {'error': "unresolved"}                
+                pilotstats[at] = {'error': "unresolved"}
+                misses.append(at)
+    if (len(misses) > 0):
+        with open("pilot_misses.txt", "a") as m:
+            for miss in misses:
+                m.write('"'+miss+'": "",\r\n')
+            
     return pilotstats
     
