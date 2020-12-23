@@ -60,22 +60,21 @@ def queryList(pilotsflat):
         
         for td in tds:
             at = td.find("a").text.strip().replace('\xa0', '\x20')
-            if at in pilotsflat:
-                dict = {}
-                debugOutputString("statistics for " + at)
-                parent = td.parent
-                for key in statistics:
-                    resolved = parent.find("td", attrs={"class": key}).text
-                    dict[key] = resolved
-                    debugOutputString(statistics[key] + ": " + resolved)
-                pilotstats[at] = dict.copy()
-            else:
-                pilotstats[at] = {'error': "unresolved"}
-                misses.append(at)
+            dict = {}
+            debugOutputString("statistics for " + at)
+            parent = td.parent
+            for key in statistics:
+                 resolved = parent.find("td", attrs={"class": key}).text
+                 dict[key] = resolved
+                 debugOutputString(statistics[key] + ": " + resolved)
+            if (dict['rank'] == "Not Found"):
+                misses.append(at)            
+                debugOutputString("*** " + at + " *** added to misses.txt")
+            pilotstats[at] = dict.copy()
     if (len(misses) > 0):
         with open("pilot_misses.txt", "a") as m:
             for miss in misses:
-                m.write('"'+miss+'": "",\r\n')
+                m.write('"'+miss+'": "",\n')
             
     return pilotstats
     
