@@ -36,7 +36,8 @@ def replaceKnownErrors(pa):
 
 def toGray(img):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
+    #gray, img_bin = cv2.threshold(gray,150,255,cv2.THRESH_BINARY) # | cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
+    gray, img_bin = cv2.threshold(gray,0,255,cv2.THRESH_BINARY + cv2.THRESH_OTSU) # TODO: OTSU may actually hurt?
     gray = cv2.bitwise_not(img_bin) # ugly. Works because gray is 0/255 only
     return gray
 
