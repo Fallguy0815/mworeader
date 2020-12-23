@@ -26,8 +26,8 @@ def getSegmentations(gametype):
         loopBounds = [2,1,2]
     if (loopBounds == []):
         return loopBounds # gametype not defined
-    start = np.array([350,200])
-    box = np.array([292,24])
+    start = np.array([350,202])
+    box = np.array([292,21])
     end = start + box
     current = np.copy(start)
 
@@ -39,10 +39,11 @@ def getSegmentations(gametype):
                 end = current + box
                 # Pilot name box: 
                 pBoxes.append([np.copy(current), np.copy(end)])
-                current[1] = current[1] + box [1] + 2
-
+                current[1] = current[1] + box [1] + 5
+                if (len(pBoxes) == 3):
+                    current[1] = current[1] + 1 # Last Pilot in a lance needs just one pixel more
             lBoxes.append(pBoxes)                                    
-            current[1] = current[1] + 2
+            current[1] = current[1] + 1
         segmentations.append(lBoxes)
         current = np.copy(start)
         current[0] = current[0] + 960
@@ -58,7 +59,7 @@ def drawDebugRectangles(img, segmentations):
                 sPoint = pilot[0]
                 ePoint = pilot[1]
                 index = index + 1
-                cv2.rectangle(img,tuple(sPoint), tuple(ePoint), colors[index%4], 2)
+                cv2.rectangle(img,tuple(sPoint), tuple(ePoint), colors[index%4], 1)
 
     return img
 
