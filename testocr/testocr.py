@@ -7,6 +7,7 @@ Created on Thu Nov 26 18:20:24 2020
 
 import pytesseract
 from pytesseract import Output
+import numpy as np
 import cv2
 import sys
 import time
@@ -34,10 +35,17 @@ threshold = 128
 img = cv2.resize(img,(img.shape[1]*4, img.shape[0]*4), interpolation = cv2.INTER_LANCZOS4)
 while True:
 	pn = toGray(img.copy(),threshold)
-	pn = cv2.GaussianBlur(pn,(5,5),0)
+	print(pn.shape[0])
+	print(pn.shape[1])
+	free = np.zeros((60 + pn.shape[0],60 + pn.shape[1]))
+	print (free.shape[0])
+	print (free.shape[1])
+	free[30:30+pn.shape[0],30:30+pn.shape[1]] = pn
+
+	
 	#text = pytesseract.image_to_string(pn, output_type=Output.DICT, config='--psm 7 -c preserve_interword_spaces=0 -c tessedit_char_whitelist=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"')
 	#text = text['text'][:-2]
-	cv2.imshow('threshold', pn)
+	cv2.imshow('threshold', free)
 	key = cv2.waitKeyEx(0)
 	print(str(key))
 	if (key == 2555904): # right
