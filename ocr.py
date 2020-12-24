@@ -80,9 +80,9 @@ def applyOcr(img, segs):
     
                                 dist = res['left'][num+1] - res['right'][num]
                                 
-                                if ((char=="1" or char=="l") and dist >= 5 and dist <=6):
-                                    dist = 4
-                                for dummy in (range(int(dist/5))): # 5 Pixels for as a guess for a single space between any letter for now
+                                if ((char=="1" or char=="l") and dist >= 4 and dist <=6):
+                                    dist = 3
+                                for dummy in (range(int(dist/4))): # 4 Pixels for as a guess for a single space between any letter for now
                                     text = text + " "
                     else:
                         text = ""
